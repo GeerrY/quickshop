@@ -1,0 +1,27 @@
+{% extends 'base_main.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>INFORMAÇÕES PRODUTO</h1>
+    {% include 'partials/messages.html' %}
+    <P>Imagem</P>
+    <img src="{{ product.image.url }}" alt="{{ product.name }} image" width="200">
+    <br>
+    <br>
+    <p>Nome</p>
+    <p>{{ product.name }}</p>
+    <br>
+    <p>Preço</p>
+    <p>{{ product.get_formated_price }}</p>
+    <br>
+    <div class="d-flex justify-content-between">
+        <a href="{% url 'products' %}" class="btn btn-outline-primary">Voltar</a>
+        <a href="{% url 'exportar_etiqueta' product.id %}" class="btn btn-outline-info" target="_blank">Exportar etiqueta</a>
+        <a href="{% url 'edit_product' product.id %}" class="btn btn-outline-primary">Editar</a>
+    </div>
+</div>
+{% endblock %}

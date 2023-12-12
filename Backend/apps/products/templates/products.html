@@ -1,0 +1,137 @@
+{% extends 'base_main.html' %}
+
+{% block title %}Produtos{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Seus produtos</h1>
+    {% include 'partials/messages.html' %}
+    <br>
+    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#productAddModal">
+        <i class="bi bi-plus-lg"></i>
+        Adicionar produto
+    </button>
+    <br>
+    <br>
+    <table class="table table-striped table-hover" id="table">
+        <thead>
+            <tr>
+                <th scope="col" class="text-center">Imagem</th>
+                <th scope="col" class="text-center">Nome</th>
+                <th scope="col" class="text-center">QTD. estoque</th>
+                <th scope="col" class="text-center">Preço</th>
+                <th scope="col" class="text-center">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr class="text-center" onclick="window.location.assign('{% url "info_product" product.id %}')">
+                <td style="vertical-align: middle;">
+                    <img src="{{ product.image.url }}" alt="Imagem {{ product.name }}" height="50px" class="rounded">
+                </td>
+                <td style="vertical-align: middle;">{{ product.name }}</td>
+                <td style="vertical-align: middle;">{{ product.num_stock }}</td>
+                <td style="vertical-align: middle;">{{ product.get_formated_price }}</td>
+                <td style="vertical-align: middle;">
+                    <button class="btn" data-bs-toggle="modal" data-bs-target="#del_{{ product.id }}_modal">
+                        <i class="bi bi-trash" style="color: #c82828;"></i>
+                    </button>
+                    <a href="{% url 'edit_product' product.id %}">
+                        <button class="btn">
+                            <i class="bi bi-pencil" style="color: #3144d3;"></i>
+                        </button>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+
+
+<script>
+    var table = new DataTable('#table', {
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json',
+        },
+        order: [[1, 'asc']],
+        columnDefs: [
+            { orderable: false, targets: [0, 4] }
+        ],
+    });
+</script>
+
+
+<div class="modal fade" id="productAddModal" tabindex="-1" aria-labelledby="productAddModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="productAddModalLabel">Adicionar produto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{% url 'products' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div>
+                        {{ product_add_form.image.label }}
+                        {{ product_add_form.image }}
+                    </div>
+                    <div class="form-floating my-3  ">
+                        {{ product_add_form.name }}
+                        <label for="id_name">{{ product_add_form.name.label }}</label>
+                    </div>
+                    <div class="form-floating">
+                        {{ product_add_form.price }}
+                        <label for="id_price">{{ product_add_form.price.label }}</label>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="submit" class="btn btn-outline-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% for product in products %}
+<div class="modal fade" id="del_{{ product.id }}_modal" tabindex="-1" aria-labelledby="del_{{ product.id }}_modal"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Apagar {{ product.name }}?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Tem certeza que deseja apagar o item "{{ product.name }}"?</p>
+                <p>Essa ação não pode ser revertida.</p>
+            </div>
+            <hr>
+            <div style="justify-content: space-between; display: flex; padding: 0 20px 20px 20px">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="{% url 'del_product' product.id  %}" class="btn btn-danger">Apagar</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+
+

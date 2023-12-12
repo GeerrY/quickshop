@@ -1,0 +1,38 @@
+{% extends 'base_main.html' %}
+
+{% block title %}Editar produto{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Editar Produto</h1>
+    {% include 'partials/messages.html' %}
+
+
+    <form action="{% url 'edit_product' product_edit_form.instance.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            {{ product_edit_form.image.label }}
+            {{ product_edit_form.image }}
+        </div>
+        <div class="form-floating my-3">
+            {{ product_edit_form.name }}
+            <label for="id_name">{{ product_edit_form.name.label }}</label>
+        </div>
+        <div class="form-floating">
+            {{ product_edit_form.price }}
+            <label for="id_price">{{ product_edit_form.price.label }}</label>
+        </div>
+        <div class="form-floating my-3">
+            {{ product_edit_form.num_stock }}
+            <label for="id_price">{{ product_edit_form.num_stock.label }}</label>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-outline-primary">Salvar</button>
+            <a href="{% url 'products' %}">Voltar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
